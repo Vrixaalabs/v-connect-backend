@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "es2018",
+    "module": "commonjs",
+    "lib": ["es2018", "esnext.asynciterable"],
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true,
+    "strictPropertyInitialization": false,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true
+  },
+  "include": ["src/**/*", "vconnect-backend/src/graphql/resolvers", "vconnect-backend/src/graphql/types", "vconnect-backend/src/middleware/auth.ts", "vconnect-backend/src/models/post.model.ts", "vconnect-backend/src/models/user.model.ts", "vconnect-backend/index.ts"],
+  "exclude": ["node_modules", "dist"]
+} 
