@@ -1,12 +1,13 @@
+import 'reflect-metadata';
 import express from 'express';
 import { ApolloServer } from 'apollo-server-express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { buildSchema } from 'type-graphql';
-import { UserResolver } from './src/graphql/resolvers/user.resolver';
-import { PostResolver } from './src/graphql/resolvers/post.resolver';
-import { authMiddleware } from './src/middleware/auth';
+import { UserResolver } from './graphql/resolvers/user.resolver';
+import { PostResolver } from './graphql/resolvers/post.resolver';
+import { authMiddleware } from './middleware/auth';
 
 dotenv.config();
 
@@ -26,6 +27,10 @@ const startServer = async () => {
     const schema = await buildSchema({
       resolvers: [UserResolver, PostResolver],
       validate: false,
+      authChecker: ({ context }) => {
+        // Check if user exists in context (set by auth middleware)
+        return !!context.user;
+      },
     });
 
     const server = new ApolloServer({
@@ -36,14 +41,19 @@ const startServer = async () => {
           user: req.user, // Set by auth middleware
         };
       },
+      introspection: true,
     });
 
     await server.start();
-    server.applyMiddleware({ app });
+    server.applyMiddleware({ 
+      app,
+      cors: false // Already handled by express cors middleware
+    });
 
     const PORT = process.env.PORT || 4000;
     app.listen(PORT, () => {
       console.log(`🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`);
+      console.log(`📝 Apollo Studio available at http://localhost:${PORT}${server.graphqlPath}`);
     });
   } catch (error) {
     console.error('Error starting server:', error);
