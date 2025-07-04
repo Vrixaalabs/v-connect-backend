@@ -5,7 +5,7 @@ export interface IUser extends Document {
   name: string;
   email: string;
   password: string;
-  department: string;
+  departments: string[];
   batch: string;
   interests: string[];
   isAlumni: boolean;
@@ -17,7 +17,7 @@ const userSchema = new Schema<IUser>({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  department: { type: String, required: true },
+  department: [{ type: String, required: true }],
   batch: { type: String, required: true },
   interests: [{ type: String }],
   isAlumni: { type: Boolean, default: false },

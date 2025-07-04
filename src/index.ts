@@ -8,7 +8,7 @@ import { buildSchema } from 'type-graphql';
 import { UserResolver } from './graphql/resolvers/user.resolver';
 import { PostResolver } from './graphql/resolvers/post.resolver';
 import { authMiddleware } from './middleware/auth';
-
+import { EventResolver } from './graphql/resolvers/event.resolver';
 dotenv.config();
 
 const app = express();
@@ -20,12 +20,12 @@ app.use(authMiddleware);
 const startServer = async () => {
   try {
     // Connect to MongoDB
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/vconnect');
+    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/vconnect');
     console.log('Connected to MongoDB');
 
     // Create Apollo Server
     const schema = await buildSchema({
-      resolvers: [UserResolver, PostResolver],
+      resolvers: [UserResolver, PostResolver,EventResolver],
       validate: false,
       authChecker: ({ context }) => {
         // Check if user exists in context (set by auth middleware)
