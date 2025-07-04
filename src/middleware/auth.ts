@@ -17,8 +17,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
     if (!token) {
       return next();
     }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as { userId: string };
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'thisisasecretkey') as { userId: string };
     const user = await User.findById(decoded.userId);
 
     if (!user) {

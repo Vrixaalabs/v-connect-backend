@@ -31,7 +31,8 @@ export class EventResolver {
     });
 
     await event.save();
-    return event.populate('organizers').populate('createdBy');
+await event.populate(['organizers', 'createdBy']);
+return event;
   }
 
   @Mutation(() => EventType)

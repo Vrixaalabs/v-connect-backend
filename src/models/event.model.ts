@@ -12,3 +12,4 @@ const eventSchema = new mongoose.Schema({
   attendees: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   isApproved: { type: Boolean, default: false }
 });
+export const Event = mongoose.model('Event', eventSchema);

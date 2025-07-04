@@ -1,5 +1,6 @@
 import { ObjectType, Field, ID } from "type-graphql";
 import { UserType } from "./user.type";
+import { User } from "../../models/user.model";
 @ObjectType()
 export class EventType {
   @Field(() => ID)
@@ -32,8 +33,9 @@ export class EventType {
   @Field(() => [String])
   departments: string[];
 
-  @Field(() => [String])
-  attendees: string[]; // or [UserType]
+  @Field(() => [UserType])
+  attendees: UserType[];
+
 
   @Field()
   isApproved: boolean;
