@@ -33,7 +33,7 @@ export class UserResolver {
 
     const token = jwt.sign(
       { userId: user.id },
-      process.env.JWT_SECRET || 'your-secret-key',
+      process.env.JWT_SECRET || 'v-connect-secret',
       { expiresIn: '1d' }
     );
 
@@ -67,7 +67,7 @@ export class UserResolver {
 
     const token = jwt.sign(
       { userId: user.id },
-      process.env.JWT_SECRET || 'your-secret-key',
+      process.env.JWT_SECRET || 'v-connect-secret',
       { expiresIn: '1d' }
     );
 
