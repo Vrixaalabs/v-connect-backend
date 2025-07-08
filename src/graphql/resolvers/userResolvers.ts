@@ -12,7 +12,6 @@ export const userResolvers = {
     users: async () => {
       return User.find();
     },
-
     me: async (_parent, _args, { user }) => {
       return user || null;
     }
