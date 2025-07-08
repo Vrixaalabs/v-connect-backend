@@ -8,10 +8,11 @@ import { buildSchema } from 'type-graphql';
 import { UserResolver } from './graphql/resolvers/user.resolver';
 import { PostResolver } from './graphql/resolvers/post.resolver';
 import { authMiddleware } from './middleware/auth';
+import { GroupResolver } from './graphql/resolvers/group.resolver';
 
 dotenv.config();
 
-const app = express();
+const app: express.Application = express();
 
 app.use(cors());
 app.use(express.json());
@@ -25,7 +26,7 @@ const startServer = async () => {
 
     // Create Apollo Server
     const schema = await buildSchema({
-      resolvers: [UserResolver, PostResolver],
+      resolvers: [UserResolver, PostResolver,GroupResolver],
       validate: false,
       authChecker: ({ context }) => {
         // Check if user exists in context (set by auth middleware)
