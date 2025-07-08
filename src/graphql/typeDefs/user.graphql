@@ -1,0 +1,22 @@
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  department: String!
+  batch: String!
+  interests: [String!]!
+  isAlumni: Boolean!
+  profilePicture: String
+  createdAt: String!
+  updatedAt: String!
+}
+
+type AuthResponse {
+  token: String!
+  user: User!
+}
+
+type Query {
+  users: [User!]!
+  me: User
+}

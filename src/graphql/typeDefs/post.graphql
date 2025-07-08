@@ -1,0 +1,36 @@
+type User {
+  id: ID!
+  name: String!
+  email: String!
+}
+
+type Comment {
+  id: ID!
+  author: User!
+  content: String!
+  timestamp: String!
+}
+
+type Post {
+  id: ID!
+  author: User!
+  content: String!
+  media: [String]
+  likes: [User!]!
+  comments: [Comment!]!
+  timestamp: String!
+  createdAt: String!
+  updatedAt: String!
+}
+
+type Query {
+  posts(limit: Int, offset: Int): [Post!]!
+  post(id: ID!): Post
+}
+
+type Mutation {
+  createPost(content: String!, media: [String]): Post!
+  addComment(postId: ID!, content: String!): Post!
+  likePost(postId: ID!): Post!
+  deletePost(postId: ID!): Boolean!
+}
