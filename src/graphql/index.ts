@@ -1,19 +1,40 @@
-import path from 'path';
-import { makeExecutableSchema } from '@graphql-tools/schema';
-import { mergeResolvers, mergeTypeDefs } from '@graphql-tools/merge';
-import { loadFilesSync } from '@graphql-tools/load-files';
+import { GraphQLSchema, GraphQLObjectType } from 'graphql';
 import { postResolvers } from './resolvers/postResolvers';
 import { userResolvers } from './resolvers/userResolvers';
+import { PostType } from './typeDefs/post.types';
+import { UserType } from './typeDefs/user.types';
 
-// Load all .graphql files from the typeDefs directory
-const typeDefsArray = loadFilesSync(path.join(__dirname, './typeDefs/**/*.graphql'));
-const typeDefs = mergeTypeDefs(typeDefsArray);
+// Combine Query
+const RootQuery = new GraphQLObjectType({
+  name: 'Query',
+  fields: {
+    // Post Queries
+    posts: postResolvers.Query.posts,
+    post: postResolvers.Query.post,
 
-// Merge resolvers (you can also dynamically load them if needed)
-const resolvers = mergeResolvers([userResolvers, postResolvers]);
+    // User Queries
+    users: userResolvers.Query.users,
+    me: userResolvers.Query.me,
+  },
+});
 
-// Build the schema
-export const schema = makeExecutableSchema({
-  typeDefs,
-  resolvers
+// Combine Mutation
+const RootMutation = new GraphQLObjectType({
+  name: 'Mutation',
+  fields: {
+    // Post Mutations
+    createPost: postResolvers.Mutation.createPost,
+    addComment: postResolvers.Mutation.addComment,
+    likePost: postResolvers.Mutation.likePost,
+    deletePost: postResolvers.Mutation.deletePost,
+
+    // User Mutations
+    login: userResolvers.Mutation.login,
+  },
+});
+
+// Final schema
+export const schema = new GraphQLSchema({
+  query: RootQuery,
+  mutation: RootMutation,
 });

@@ -1,19 +1,48 @@
-import jwt from 'jsonwebtoken';
+import { GraphQLList, GraphQLNonNull, GraphQLString } from 'graphql';
 import bcrypt from 'bcryptjs';
-import { User } from '../../models/user.model.ts';
+import jwt from 'jsonwebtoken';
+import { User } from '../../models/user.model';
+import { UserType, GraphQLContext } from '../typeDefs/user.types';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
-const generateToken = (userId) =>
-  jwt.sign({ userId }, JWT_SECRET, { expiresIn: '1d' });
+function generateToken(userId: string) {
+  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: '1d' });
+}
 
 export const userResolvers = {
   Query: {
-    users: async () => {
-      return User.find();
+    users: {
+      type: new GraphQLList(UserType),
+      resolve: async () => {
+        return await User.find();
+      },
     },
-    me: async (_parent, _args, { user }) => {
-      return user || null;
-    }
+
+    me: {
+      type: UserType,
+      resolve: async (_parent: unknown, _args: unknown, context: GraphQLContext) => {
+        return context.user || null;
+      },
+    },
+  },
+
+  Mutation: {
+    login: {
+      type: GraphQLString, // return JWT token as string
+      args: {
+        email: { type: new GraphQLNonNull(GraphQLString) },
+        password: { type: new GraphQLNonNull(GraphQLString) },
+      },
+      resolve: async (_parent, { email, password }) => {
+        const user = await User.findOne({ email });
+        if (!user) throw new Error('User not found');
+
+        const isMatch = await bcrypt.compare(password, user.password || '');
+        if (!isMatch) throw new Error('Invalid credentials');
+
+        return generateToken(user.id);
+      },
+    },
   },
 };
