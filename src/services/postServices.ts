@@ -1,14 +1,12 @@
 import { Post } from '../models/post.model.ts';
 
-const TEST_USER_ID = '64ea6aabc20e1b6a8b2b4f12';
-
 const createPostService = async (content, media, user) => {
-  if (!user) {
-    user = { id: TEST_USER_ID };
+  if (!user || !user._id) {
+    throw new Error('User not authenticated');
   }
 
   const post = await Post.create({
-    author: user.id,
+    author: user._id,
     content,
     media,
     timestamp: new Date(),
@@ -18,15 +16,15 @@ const createPostService = async (content, media, user) => {
 };
 
 const addCommentService = async (postId, content, user) => {
-  if (!user) {
-    user = { id: TEST_USER_ID };
+  if (!user || !user._id) {
+    throw new Error('User not authenticated');
   }
 
   const post = await Post.findById(postId);
   if (!post) throw new Error('Post not found');
 
   post.comments.push({
-    author: user.id,
+    author: user._id,
     content,
     timestamp: new Date(),
   });
@@ -36,18 +34,18 @@ const addCommentService = async (postId, content, user) => {
 };
 
 const likePostService = async (postId, user) => {
-  if (!user) {
-    user = { id: TEST_USER_ID };
+  if (!user || !user._id) {
+    throw new Error('User not authenticated');
   }
 
   const post = await Post.findById(postId);
   if (!post) throw new Error('Post not found');
 
-  const alreadyLiked = post.likes.includes(user.id);
+  const alreadyLiked = post.likes.includes(user._id);
   if (alreadyLiked) {
-    post.likes = post.likes.filter((id) => id.toString() !== user.id);
+    post.likes = post.likes.filter((id) => id.toString() !== user._id.toString());
   } else {
-    post.likes.push(user.id);
+    post.likes.push(user._id);
   }
 
   await post.save();
@@ -55,15 +53,15 @@ const likePostService = async (postId, user) => {
 };
 
 const deletePostService = async (postId, user) => {
-  if (!user) {
-    user = { id: TEST_USER_ID };
+  if (!user || !user._id) {
+    throw new Error('User not authenticated');
   }
 
   const post = await Post.findById(postId);
   if (!post) throw new Error('Post not found');
 
-  if (post.author.toString() !== user.id) {
-    throw new Error('Not authorized to delete');
+  if (post.author.toString() !== user._id.toString()) {
+    throw new Error('Not authorized to delete this post');
   }
 
   await post.deleteOne();

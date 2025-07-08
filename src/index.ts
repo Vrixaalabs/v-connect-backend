@@ -4,7 +4,7 @@ import { ApolloServer } from 'apollo-server-express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { schema } from './graphql/index.ts'; // <-- Combined SDL and resolvers
+import { schema } from './graphql/index.ts';
 import jwt from 'jsonwebtoken';
 import { User } from './models/user.model.ts';
 import { authMiddleware } from './middleware/auth';
@@ -15,7 +15,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-// app.use(authMiddleware);
+app.use(authMiddleware);
 
 const getUserFromToken = async (token) => {
   try {
@@ -38,7 +38,7 @@ const startServer = async () => {
       context: async ({ req }) => {
         const token = req.headers.authorization || '';
         const user = await getUserFromToken(token);
-        return { user };
+        return { user: req.user || null };
       },
       introspection: true
     });
