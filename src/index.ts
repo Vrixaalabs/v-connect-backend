@@ -4,9 +4,9 @@ import { ApolloServer } from 'apollo-server-express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { schema } from './graphql/index.ts';
+import { schema } from './graphql/index';
 import jwt from 'jsonwebtoken';
-import { User } from './models/user.model.ts';
+import { User } from './models/user.model';
 import { authMiddleware } from './middleware/auth';
 
 dotenv.config();

@@ -34,7 +34,7 @@ export const userResolvers = {
         email: { type: new GraphQLNonNull(GraphQLString) },
         password: { type: new GraphQLNonNull(GraphQLString) },
       },
-      resolve: async (_parent, { email, password }) => {
+      resolve: async (_parent: any, { email, password }: any) => {
         const user = await User.findOne({ email });
         if (!user) throw new Error('User not found');
 

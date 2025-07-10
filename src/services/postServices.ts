@@ -1,4 +1,4 @@
-import { Post } from '../models/post.model.ts';
+import { Post } from '../models/post.model';
 
 const createPostService = async (content, media, user) => {
   if (!user || !user._id) {
