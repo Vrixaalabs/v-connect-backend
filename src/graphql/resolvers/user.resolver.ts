@@ -103,4 +103,67 @@ export class UserResolver {
 
     return updatedUser;
   }
+
+  // --- Alumni Verification Logic ---
+
+  @Authorized()
+  @Mutation(() => String)
+  async requestAlumniVerification(
+    @Arg('message') message: string,
+    @Ctx() { user }: { user: any }
+  ): Promise<string> {
+    const me = await User.findById(user.id);
+    if (!me) throw new Error('User not found');
+    if (me.isAlumniVerified) throw new Error('Already verified');
+    me.isAlumni = true;
+    me.alumniVerificationRequest = {
+      requested: true,
+      message
+    };
+    await me.save();
+    return 'Request submitted successfully.';
+  }
+
+  @Authorized()
+  @Mutation(() => String)
+  async approveAlumni(
+    @Arg('userId') userId: string,
+    @Ctx() { user }: { user: any }
+  ): Promise<string> {
+    if (!user.roles || !user.roles.includes('TopAdmin')) throw new Error('Not authorized');
+    await User.findByIdAndUpdate(userId, {
+      isAlumniVerified: true,
+      'alumniVerificationRequest.requested': false
+    });
+    return 'Alumni approved.';
+  }
+
+  @Authorized()
+  @Mutation(() => String)
+  async rejectAlumni(
+    @Arg('userId') userId: string,
+    @Ctx() { user }: { user: any }
+  ): Promise<string> {
+    if (!user.roles || !user.roles.includes('TopAdmin')) throw new Error('Not authorized');
+    await User.findByIdAndUpdate(userId, {
+      isAlumni: false,
+      isAlumniVerified: false,
+      alumniVerificationRequest: { requested: false, message: '' }
+    });
+    return 'Alumni request rejected.';
+  }
+
+  @Query(() => [UserType])
+  async getVerifiedAlumni(): Promise<UserType[]> {
+    return User.find({ isAlumniVerified: true });
+  }
+
+  @Authorized()
+  @Query(() => [UserType])
+  async getPendingAlumniRequests(
+    @Ctx() { user }: { user: any }
+  ): Promise<UserType[]> {
+    if (!user.roles || !user.roles.includes('TopAdmin')) throw new Error('Not authorized');
+    return User.find({ 'alumniVerificationRequest.requested': true });
+  }
 } 

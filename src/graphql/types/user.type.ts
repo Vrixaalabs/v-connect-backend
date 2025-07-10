@@ -1,6 +1,15 @@
 import { ObjectType, Field, ID } from 'type-graphql';
 
 @ObjectType()
+export class AlumniVerificationRequestType {
+  @Field()
+  requested: boolean;
+
+  @Field({ nullable: true })
+  message?: string;
+}
+
+@ObjectType()
 export class UserType {
   @Field(() => ID)
   id: string;
@@ -23,8 +32,23 @@ export class UserType {
   @Field()
   isAlumni: boolean;
 
+  @Field()
+  isAlumniVerified: boolean;
+
+  @Field({ nullable: true })
+  graduationYear?: number;
+
+  @Field({ nullable: true })
+  alumniBio?: string;
+
   @Field({ nullable: true })
   profilePicture?: string;
+
+  @Field(() => AlumniVerificationRequestType, { nullable: true })
+  alumniVerificationRequest?: AlumniVerificationRequestType;
+
+  @Field(() => [String], { nullable: true })
+  roles?: string[];
 
   @Field()
   createdAt: Date;

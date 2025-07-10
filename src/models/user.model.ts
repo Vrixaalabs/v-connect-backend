@@ -9,7 +9,15 @@ export interface IUser extends Document {
   batch: string;
   interests: string[];
   isAlumni: boolean;
+  isAlumniVerified: boolean;
+  graduationYear?: number;
+  alumniBio?: string;
+  alumniVerificationRequest?: {
+    requested: boolean;
+    message?: string;
+  };
   profilePicture?: string;
+  roles?: string[];
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
@@ -21,7 +29,15 @@ const userSchema = new Schema<IUser>({
   batch: { type: String, required: true },
   interests: [{ type: String }],
   isAlumni: { type: Boolean, default: false },
+  isAlumniVerified: { type: Boolean, default: false },
+  graduationYear: { type: Number },
+  alumniBio: { type: String },
+  alumniVerificationRequest: {
+    requested: { type: Boolean, default: false },
+    message: { type: String }
+  },
   profilePicture: { type: String },
+  roles: [{ type: String, default: [] }],
 }, {
   timestamps: true,
 });
