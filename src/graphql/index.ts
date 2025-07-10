@@ -3,6 +3,7 @@ import { postResolvers } from './resolvers/postResolvers';
 import { userResolvers } from './resolvers/userResolvers';
 import { PostType } from './typeDefs/post.types';
 import { UserType } from './typeDefs/user.types';
+import { friendRequestResolvers } from './resolvers/friendRequestResolvers';
 
 // Combine Query
 const RootQuery = new GraphQLObjectType({
@@ -15,6 +16,10 @@ const RootQuery = new GraphQLObjectType({
     // User Queries
     users: userResolvers.Query.users,
     me: userResolvers.Query.me,
+
+    // UserSearch and FriendRequest Queries
+    searchUsers: friendRequestResolvers.Query.searchUsers,
+    getFriendRequests: friendRequestResolvers.Query.getFriendRequests
   },
 });
 
@@ -30,6 +35,10 @@ const RootMutation = new GraphQLObjectType({
 
     // User Mutations
     login: userResolvers.Mutation.login,
+
+    // FriendRequest Mutations
+    sendFriendRequest: friendRequestResolvers.Mutation.sendFriendRequest,
+    respondToFriendRequest: friendRequestResolvers.Mutation.respondToFriendRequest
   },
 });
 
