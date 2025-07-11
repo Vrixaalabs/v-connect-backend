@@ -24,7 +24,10 @@ const RootMutation = new GraphQLObjectType({
   fields: {
     // Post Mutations
     createPost: postResolvers.Mutation.createPost,
+    updatePost: postResolvers.Mutation.updatePost,
     addComment: postResolvers.Mutation.addComment,
+    updateComment: postResolvers.Mutation.updateComment,
+    deleteComment: postResolvers.Mutation.deleteComment,
     likePost: postResolvers.Mutation.likePost,
     deletePost: postResolvers.Mutation.deletePost,
 

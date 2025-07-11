@@ -1,18 +1,31 @@
-import { GraphQLID, GraphQLList, GraphQLNonNull, GraphQLString, GraphQLBoolean } from 'graphql';
+import {
+  GraphQLID,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLString,
+  GraphQLBoolean,
+} from 'graphql';
 import { PostType } from '../typeDefs/post.types';
 import { Post } from '../../models/post.model';
+
 import {
   createPostService,
+  updatePostService,
   addCommentService,
   likePostService,
   deletePostService,
+  updateCommentService,
+  deleteCommentService,
 } from '../../services/postServices';
 
 import {
   PostsArgs,
   PostArgs,
+  UpdatePostArgs,
   CreatePostArgs,
   AddCommentArgs,
+  UpdateCommentArgs,
+  DeleteCommentArgs,
   LikePostArgs,
   DeletePostArgs,
   User,
@@ -67,7 +80,27 @@ export const postResolvers = {
         return createPostService(args.content, args.media, context.user);
       },
     },
-
+    updatePost: {
+      type: PostType,
+      args: {
+        postId: { type: new GraphQLNonNull(GraphQLID) },
+        content: { type: new GraphQLNonNull(GraphQLString) },
+      },
+      resolve: async (
+        _parent: unknown,
+        args: UpdatePostArgs,
+        context: { user: User }
+      ) => {
+        if (!context.user) throw new Error('Not authenticated');
+        return updatePostService(
+          args.postId,
+          args.content,
+          args.media,
+          context.user
+        );
+      },
+    },
+    
     addComment: {
       type: PostType,
       args: {
@@ -81,6 +114,44 @@ export const postResolvers = {
       ) => {
         if (!context.user) throw new Error('Not authenticated');
         return addCommentService(args.postId, args.content, context.user);
+      },
+    },
+
+    updateComment: {
+      type: PostType,
+      args: {
+        postId: { type: new GraphQLNonNull(GraphQLID) },
+        commentId: { type: new GraphQLNonNull(GraphQLID) },
+        content: { type: new GraphQLNonNull(GraphQLString) },
+      },
+      resolve: async (
+        _parent: unknown,
+        args: { postId: string; commentId: string; content: string },
+        context: { user: User }
+      ) => {
+        if (!context.user) throw new Error('Not authenticated');
+        return updateCommentService(
+          args.postId,
+          args.commentId,
+          args.content,
+          context.user
+        );
+      },
+    },
+
+    deleteComment: {
+      type: PostType,
+      args: {
+        postId: { type: new GraphQLNonNull(GraphQLID) },
+        commentId: { type: new GraphQLNonNull(GraphQLID) },
+      },
+      resolve: async (
+        _parent: unknown,
+        args: { postId: string; commentId: string },
+        context: { user: User }
+      ) => {
+        if (!context.user) throw new Error('Not authenticated');
+        return deleteCommentService(args.postId, args.commentId, context.user);
       },
     },
 
