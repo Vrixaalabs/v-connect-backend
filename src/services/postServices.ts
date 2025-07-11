@@ -15,6 +15,27 @@ const createPostService = async (content, media, user) => {
   return post.populate('author');
 };
 
+const updatePostService = async (postId, content, media, user) => {
+  if (!user || !user._id) {
+    throw new Error('User not authenticated');
+  }
+
+  const post = await Post.findById(postId);
+  if (!post) throw new Error('Post not found');
+
+  if (post.author.toString() !== user._id.toString()) {
+    throw new Error('Not authorized to update this post');
+  }
+
+  if (content !== undefined) post.content = content;
+  if (media !== undefined) post.media = media;
+  post.updatedAt = new Date();
+
+  await post.save();
+
+  return post.populate('author');
+};
+
 const addCommentService = async (postId, content, user) => {
   if (!user || !user._id) {
     throw new Error('User not authenticated');
@@ -30,6 +51,49 @@ const addCommentService = async (postId, content, user) => {
   });
 
   await post.save();
+  return post.populate('author comments.author likes');
+};
+
+const updateCommentService = async (postId, commentId, newContent, user) => {
+  if (!user || !user._id) {
+    throw new Error('User not authenticated');
+  }
+
+  const post = await Post.findById(postId);
+  if (!post) throw new Error('Post not found');
+
+  const comment = post.comments.id(commentId);
+  if (!comment) throw new Error('Comment not found');
+
+  if (comment.author.toString() !== user._id.toString()) {
+    throw new Error('Not authorized to update this comment');
+  }
+
+  comment.content = newContent;
+  comment.timestamp = new Date(); // Optionally track updates
+
+  await post.save();
+  return post.populate('author comments.author likes');
+};
+
+const deleteCommentService = async (postId, commentId, user) => {
+  if (!user || !user._id) {
+    throw new Error('User not authenticated');
+  }
+
+  const post = await Post.findById(postId);
+  if (!post) throw new Error('Post not found');
+
+  const comment = post.comments.id(commentId);
+  if (!comment) throw new Error('Comment not found');
+
+  if (comment.author.toString() !== user._id.toString()) {
+    throw new Error('Not authorized to delete this comment');
+  }
+
+  comment.remove();
+  await post.save();
+
   return post.populate('author comments.author likes');
 };
 
@@ -70,7 +134,10 @@ const deletePostService = async (postId, user) => {
 
 export {
   createPostService,
+  updatePostService,
   addCommentService,
+  updateCommentService,
+  deleteCommentService,
   likePostService,
   deletePostService,
 };
