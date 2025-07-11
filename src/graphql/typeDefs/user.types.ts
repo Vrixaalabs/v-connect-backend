@@ -17,6 +17,7 @@ export interface UserGraphQL {
   interests: string[];
   isAlumni: boolean;
   profilePicture?: string;
+  friends: UserGraphQL[];
   createdAt: string;
   updatedAt: string;
 }
@@ -34,7 +35,7 @@ export interface GraphQLContext {
 // 4. GraphQLObjectType for User (used in resolvers)
 export const UserType = new GraphQLObjectType({
   name: 'User',
-  fields: () => ({
+  fields: (): Record<string, any> => ({
     id: { type: new GraphQLNonNull(GraphQLID) },
     name: { type: new GraphQLNonNull(GraphQLString) },
     email: { type: new GraphQLNonNull(GraphQLString) },
@@ -43,6 +44,7 @@ export const UserType = new GraphQLObjectType({
     interests: { type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLString))) },
     isAlumni: { type: new GraphQLNonNull(GraphQLBoolean) },
     profilePicture: { type: GraphQLString },
+    friends: { type: new GraphQLNonNull(new GraphQLList(UserType)) },
     createdAt: { type: new GraphQLNonNull(GraphQLString) },
     updatedAt: { type: new GraphQLNonNull(GraphQLString) },
   }),

@@ -1,4 +1,5 @@
-import { Schema, model, Document } from 'mongoose';
+import mongoose, { Schema, model, Document } from 'mongoose';
+import { UserGraphQL } from '../graphql/typeDefs/user.types';
 
 export interface IUser extends Document {
     name: string;
@@ -9,6 +10,7 @@ export interface IUser extends Document {
     interests: string[];
     isAlumni: boolean;
     profilePicture?: string;
+    friends: mongoose.Types.ObjectId;
     auth0Id: string; // <-- Add this
     comparePassword(candidatePassword: string): Promise<boolean>;
 }
@@ -22,6 +24,10 @@ const userSchema = new Schema<IUser>({
     interests: [{ type: String }],
     isAlumni: { type: Boolean, default: false },
     profilePicture: { type: String },
+    friends: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }],
     auth0Id: { type: String, required: true, unique: true }, // <-- Add this
 }, {
     timestamps: true,
