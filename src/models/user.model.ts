@@ -9,7 +9,7 @@ export interface IUser extends Document {
     interests: string[];
     isAlumni: boolean;
     profilePicture?: string;
-    friends: mongoose.Types.ObjectId;
+    friends: mongoose.Types.ObjectId[];
     auth0Id: string; // <-- Add this
     comparePassword(candidatePassword: string): Promise<boolean>;
 }
