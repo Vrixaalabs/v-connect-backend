@@ -1,5 +1,4 @@
 import mongoose, { Schema, model, Document } from 'mongoose';
-import { UserGraphQL } from '../graphql/typeDefs/user.types';
 
 export interface IUser extends Document {
     name: string;
