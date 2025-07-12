@@ -10,7 +10,7 @@ import {
   AddPortfolioEntryArgs,
   UpdatePortfolioEntryArgs,
   DeletePortfolioEntryArgs
-} from '../typesDefs/Profile.type';
+} from '../typeDefs/Profile.type';
 
 export const userResolvers = {
   Query: {
