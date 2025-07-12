@@ -1,5 +1,5 @@
 import { connectDB } from './db';
-import { User } from './models/user.model';
+import { User } from './models/Profile.model';
 
 const seedUsers = [
   {

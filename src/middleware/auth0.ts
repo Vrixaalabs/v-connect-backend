@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import jwksClient from 'jwks-rsa';
-import { User } from '../models/user.model';
+import { User } from '../models/Profile.model';
 import dotenv from 'dotenv';
 
 dotenv.config(); // Load environment variables from .env

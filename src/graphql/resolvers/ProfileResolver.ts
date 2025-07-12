@@ -1,5 +1,5 @@
 import { GraphQLNonNull, GraphQLID, GraphQLInt } from 'graphql';
-import { User } from '../../models/user.model';
+import { User } from '../../models/Profile.model';
 import { 
   UserType, 
   UserProfileResultType, 
