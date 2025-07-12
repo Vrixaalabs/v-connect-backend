@@ -11,7 +11,7 @@ dotenv.config();
 const startServer = async () => {
   try {
     // MongoDB Connection
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/vconnect');
+    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/user-profile-dev');
     console.log('✅ Connected to MongoDB');
 
     const app = express();
