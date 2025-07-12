@@ -1,106 +1,125 @@
-import { Resolver, Query, Mutation, Arg, Ctx, Authorized } from 'type-graphql';
-import jwt from 'jsonwebtoken';
+import { GraphQLNonNull, GraphQLID, GraphQLInt } from 'graphql';
 import { User } from '../../models/user.model';
-import { UserType, AuthResponse } from '../types/user.type';
+import { 
+  UserType, 
+  UserProfileResultType, 
+  UpdateUserInputType,
+  UpdatePortfolioEntryInputType,
+  AddPortfolioEntryInputType,
+  User as UserTypeInterface,
+  AddPortfolioEntryArgs,
+  UpdatePortfolioEntryArgs,
+  DeletePortfolioEntryArgs
+} from '../types/user.type';
 
-@Resolver()
-export class UserResolver {
-  @Query(() => [UserType])
-  async users(): Promise<UserType[]> {
-    return User.find();
-  }
+export const userResolvers = {
+  Query: {
+    getMyProfile: {
+      type: UserType,
+      resolve: async (_parent: unknown, __: unknown, context: { user?: { sub: string } }): Promise<UserTypeInterface | null> => {
+        if (!context.user) return null;
+        return await User.findOne({ auth0Id: context.user.sub });
+      },
+    },
 
-  @Query(() => UserType, { nullable: true })
-  async me(@Ctx() { user }: { user: any }): Promise<UserType | null> {
-    if (!user) return null;
-    return user;
-  }
+    getUserProfile: {
+      type: UserProfileResultType,
+      args: {
+        userId: { type: new GraphQLNonNull(GraphQLID) },
+      },
+      resolve: async (_parent: unknown, args: any, context: { user?: { sub: string } }): Promise<{ user?: UserTypeInterface; isOwner: boolean }> => {
+        const user = await User.findById(args.userId);
+        const isOwner = context.user?.sub === user?.auth0Id;
+        return { user: user || undefined, isOwner };
+      },
+    },
+  },
 
-  @Mutation(() => AuthResponse)
-  async login(
-    @Arg('email') email: string,
-    @Arg('password') password: string
-  ): Promise<AuthResponse> {
-    const user = await User.findOne({ email });
-    if (!user) {
-      throw new Error('User not found');
-    }
+  Mutation: {
+    updateMyProfile: {
+      type: UserType,
+      args: {
+        input: { type: new GraphQLNonNull(UpdateUserInputType) },
+      },
+      resolve: async (_parent: unknown, args: any, context: { user?: { sub: string } }): Promise<UserTypeInterface> => {
+        if (!context.user) throw new Error('Unauthorized');
+        const updatedUser = await User.findOneAndUpdate(
+          { auth0Id: context.user.sub },
+          args.input,
+          { new: true, runValidators: true }
+        );
+        if (!updatedUser) throw new Error('User not found');
+        return updatedUser;
+      },
+    },
 
-    const isValid = await user.comparePassword(password);
-    if (!isValid) {
-      throw new Error('Invalid password');
-    }
+    addPortfolioEntry: {
+      type: UserType,
+      args: {
+        input: { type: new GraphQLNonNull(AddPortfolioEntryInputType) },
+      },
+      resolve: async (_parent: unknown, args: AddPortfolioEntryArgs, context: { user?: { sub: string } }): Promise<UserTypeInterface> => {
+        if (!context.user) throw new Error('Unauthorized');
+        
+        const user = await User.findOne({ auth0Id: context.user.sub });
+        if (!user) throw new Error('User not found');
+ 
+        user.portfolio = user.portfolio || [];
+        user.portfolio.push(args.input);
+        
+        const updatedUser = await user.save();
+        return updatedUser;
+      },
+    },
 
-    const token = jwt.sign(
-      { userId: user.id },
-      process.env.JWT_SECRET || 'your-secret-key',
-      { expiresIn: '1d' }
-    );
+    updatePortfolioEntry: {
+      type: UserType,
+      args: {
+        index: { type: new GraphQLNonNull(GraphQLInt) },
+        input: { type: new GraphQLNonNull(UpdatePortfolioEntryInputType) },
+      },
+      resolve: async (_parent: unknown, args: UpdatePortfolioEntryArgs, context: { user?: { sub: string } }): Promise<UserTypeInterface> => {
+        if (!context.user) throw new Error('Unauthorized');
+        
+        const user = await User.findOne({ auth0Id: context.user.sub });
+        if (!user) throw new Error('User not found');
 
-    return { token, user };
-  }
+        if (!user.portfolio || args.index < 0 || args.index >= user.portfolio.length) {
+          throw new Error('Invalid portfolio entry index');
+        }
 
-  @Mutation(() => AuthResponse)
-  async register(
-    @Arg('name') name: string,
-    @Arg('email') email: string,
-    @Arg('password') password: string,
-    @Arg('department') department: string,
-    @Arg('batch') batch: string,
-    @Arg('isAlumni') isAlumni: boolean,
-    @Arg('interests', () => [String]) interests: string[]
-  ): Promise<AuthResponse> {
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      throw new Error('User already exists');
-    }
+   
+        user.portfolio[args.index] = {
+          ...user.portfolio[args.index],
+          ...args.input,
+        };
+        
+        const updatedUser = await user.save();
+        return updatedUser;
+      },
+    },
 
-    const user = await User.create({
-      name,
-      email,
-      password,
-      department,
-      batch,
-      isAlumni,
-      interests
-    });
+    deletePortfolioEntry: {
+      type: UserType,
+      args: {
+        index: { type: new GraphQLNonNull(GraphQLInt) },
+      },
+      resolve: async (_parent: unknown, args: DeletePortfolioEntryArgs, context: { user?: { sub: string } }): Promise<UserTypeInterface> => {
+        if (!context.user) throw new Error('Unauthorized');
+        
+        const user = await User.findOne({ auth0Id: context.user.sub });
+        if (!user) throw new Error('User not found');
 
-    const token = jwt.sign(
-      { userId: user.id },
-      process.env.JWT_SECRET || 'your-secret-key',
-      { expiresIn: '1d' }
-    );
+        if (!user.portfolio || args.index < 0 || args.index >= user.portfolio.length) {
+          throw new Error('Invalid portfolio entry index');
+        }
 
-    return { token, user };
-  }
-
-  @Authorized()
-  @Mutation(() => UserType)
-  async updateProfile(
-    @Ctx() { user }: { user: any },
-    @Arg('name', { nullable: true }) name?: string,
-    @Arg('department', { nullable: true }) department?: string,
-    @Arg('batch', { nullable: true }) batch?: string,
-    @Arg('interests', () => [String], { nullable: true }) interests?: string[],
-    @Arg('profilePicture', { nullable: true }) profilePicture?: string
-  ): Promise<UserType> {
-    const updates: any = {};
-    if (name) updates.name = name;
-    if (department) updates.department = department;
-    if (batch) updates.batch = batch;
-    if (interests) updates.interests = interests;
-    if (profilePicture) updates.profilePicture = profilePicture;
-
-    const updatedUser = await User.findByIdAndUpdate(
-      user.id,
-      updates,
-      { new: true }
-    );
-
-    if (!updatedUser) {
-      throw new Error('User not found');
-    }
-
-    return updatedUser;
-  }
-} 
+ 
+        user.portfolio.splice(args.index, 1);
+        
+        const updatedUser = await user.save();
+        return updatedUser;
+      },
+    },
+  },
+};
