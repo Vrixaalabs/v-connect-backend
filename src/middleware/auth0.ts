@@ -4,7 +4,9 @@ import jwksClient from 'jwks-rsa';
 import { User } from '../models/user.model';
 import dotenv from 'dotenv';
 
-dotenv.config();  
+dotenv.config(); // Load environment variables from .env
+
+// Augment Express request type
 declare global {
   namespace Express {
     interface Request {
@@ -59,4 +61,4 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
 
     next();
   });
-}; 
+};

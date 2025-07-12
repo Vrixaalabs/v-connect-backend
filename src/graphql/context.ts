@@ -1,7 +1,7 @@
 import { ExpressContext } from 'apollo-server-express';
 import { mockUsers } from '../middleware/mockauth';
 import { GraphQLSchema, GraphQLObjectType } from 'graphql';
-import { userResolvers } from './resolvers/user.resolver';
+import { userResolvers } from './resolvers/ProfileResolver';
 
  
 export interface AuthUser {

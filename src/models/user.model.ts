@@ -1,6 +1,5 @@
 import { Schema, model, Document, Types } from 'mongoose';
 
- 
 export interface IPortfolioEntry {
   title?: string;
   description?: string;
@@ -22,7 +21,6 @@ export interface IUser extends Document {
   portfolio?: IPortfolioEntry[];
 }
 
- 
 const PortfolioEntrySchema = new Schema<IPortfolioEntry>({
   title: String,
   description: String,
@@ -46,5 +44,4 @@ const UserSchema = new Schema<IUser>({
   timestamps: true,  
 });
 
- 
 export const User = model<IUser>('User', UserSchema);
