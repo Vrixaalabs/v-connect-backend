@@ -2,10 +2,10 @@
   "name": "vconnect-backend",
   "version": "1.0.0",
   "description": "Backend for V-Connect social platform",
-  "main": "dist/index.js",
+  "main": "dist/server.js",
   "scripts": {
-    "start": "node dist/index.js",
-    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "start": "node dist/server.js",
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
     "test": "jest"
   },
@@ -17,9 +17,7 @@
     "@graphql-tools/merge": "^9.0.24",
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.17",
-    "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.5",
-    "@types/node": "^20.11.24",
     "apollo-server-express": "^3.13.0",
     "bcryptjs": "^2.4.3",
     "class-validator": "^0.14.1",
@@ -31,10 +29,13 @@
     "jwks-rsa": "^3.2.0",
     "mongoose": "^8.2.0",
     "reflect-metadata": "^0.2.2",
-    "type-graphql": "^1.1.1",
-    "typescript": "^5.3.3"
+    "type-graphql": "^1.1.1"
   },
   "devDependencies": {
-    "ts-node-dev": "^2.0.0"
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.0.10",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.8.3"
   }
 }
