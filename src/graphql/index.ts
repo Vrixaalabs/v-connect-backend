@@ -1,9 +1,8 @@
 import { GraphQLSchema, GraphQLObjectType } from 'graphql';
 import { postResolvers } from './resolvers/postResolvers';
 import { userResolvers } from './resolvers/userResolvers';
-import { PostType } from './typeDefs/post.types';
-import { UserType } from './typeDefs/user.types';
 import { friendRequestResolvers } from './resolvers/friendRequestResolvers';
+import { settingsResolvers } from './resolvers/settings.resolver'; // ✅ Add this
 
 // Combine Query
 const RootQuery = new GraphQLObjectType({
@@ -17,9 +16,12 @@ const RootQuery = new GraphQLObjectType({
     users: userResolvers.Query.users,
     me: userResolvers.Query.me,
 
-    // UserSearch and FriendRequest Queries
+    // Friend Request Queries
     searchUsers: friendRequestResolvers.Query.searchUsers,
-    getFriendRequests: friendRequestResolvers.Query.getFriendRequests
+    getFriendRequests: friendRequestResolvers.Query.getFriendRequests,
+
+    // ✅ Settings Query
+    getMySettings: settingsResolvers.Query.getMySettings,
   },
 });
 
@@ -36,9 +38,12 @@ const RootMutation = new GraphQLObjectType({
     // User Mutations
     login: userResolvers.Mutation.login,
 
-    // FriendRequest Mutations
+    // Friend Request Mutations
     sendFriendRequest: friendRequestResolvers.Mutation.sendFriendRequest,
-    respondToFriendRequest: friendRequestResolvers.Mutation.respondToFriendRequest
+    respondToFriendRequest: friendRequestResolvers.Mutation.respondToFriendRequest,
+
+    // ✅ Settings Mutation
+    updateMySettings: settingsResolvers.Mutation.updateMySettings,
   },
 });
 
