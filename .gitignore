@@ -1,3 +1,12 @@
 node_modules
 dist
 .env
+
+
+notification-demo.html
+frontend-example.js
+test-notifications.js
+test-subscription.js
+debug-subscription.js
+test-with-token.js
+README.md

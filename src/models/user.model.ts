@@ -1,4 +1,4 @@
-import { Schema, model, Document } from 'mongoose';
+import mongoose, { Schema, model, Document } from 'mongoose';
 import bcrypt from 'bcryptjs';
 
 export interface IUser extends Document {
@@ -10,6 +10,9 @@ export interface IUser extends Document {
   interests: string[];
   isAlumni: boolean;
   profilePicture?: string;
+  friends: Schema.Types.ObjectId[];
+  friendRequests: Schema.Types.ObjectId[];
+  sentFriendRequests: Schema.Types.ObjectId[];
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
@@ -22,6 +25,9 @@ const userSchema = new Schema<IUser>({
   interests: [{ type: String }],
   isAlumni: { type: Boolean, default: false },
   profilePicture: { type: String },
+  friends: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+  friendRequests: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+  sentFriendRequests: [{ type: Schema.Types.ObjectId, ref: 'User' }],
 }, {
   timestamps: true,
 });

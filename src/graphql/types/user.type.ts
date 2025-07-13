@@ -26,6 +26,15 @@ export class UserType {
   @Field({ nullable: true })
   profilePicture?: string;
 
+  @Field(() => [UserType])
+  friends: UserType[];
+
+  @Field(() => [UserType])
+  friendRequests: UserType[];
+
+  @Field(() => [UserType])
+  sentFriendRequests: UserType[];
+
   @Field()
   createdAt: Date;
 
