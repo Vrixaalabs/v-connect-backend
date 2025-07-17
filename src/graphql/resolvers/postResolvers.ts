@@ -16,6 +16,7 @@ import {
   deletePostService,
   updateCommentService,
   deleteCommentService,
+  sharePostService,
 } from '../../services/postServices';
 
 import {
@@ -28,6 +29,7 @@ import {
   DeleteCommentArgs,
   LikePostArgs,
   DeletePostArgs,
+  SharePostArgs,
   User,
 } from '../typeDefs/post.types';
 
@@ -46,7 +48,9 @@ export const postResolvers = {
           .limit(args.limit || 10)
           .populate('author')
           .populate('comments.author')
-          .populate('likes');
+          .populate('likes')
+          .populate('shares.sharedBy')
+          .populate('shares.sharedWith')
       },
     },
 
@@ -182,6 +186,21 @@ export const postResolvers = {
       ) => {
         if (!context.user) throw new Error('Not authenticated');
         return deletePostService(args.postId, context.user);
+      },
+    },
+    sharePost: {
+      type: GraphQLBoolean,
+      args: {
+        postId: { type: new GraphQLNonNull(GraphQLID) },
+        receivers: { type: new GraphQLList(GraphQLString) },
+      },
+      resolve: async (
+        _parent: unknown,
+        args: SharePostArgs,
+        context: { user: User }
+      ) => {
+        if (!context.user) throw new Error('Not authenticated');
+        return sharePostService(args.postId, args.receivers, context.user);
       },
     },
   },

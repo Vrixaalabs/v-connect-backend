@@ -45,7 +45,7 @@ const startServer = async () => {
 
     await server.start();
 
-    server.applyMiddleware({ app, cors: false }); // `cors` already handled by express
+    server.applyMiddleware({ app, cors: false });
 
     const PORT = process.env.PORT || 4000;
     app.listen(PORT, () => {

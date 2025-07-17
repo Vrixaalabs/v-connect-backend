@@ -132,6 +132,40 @@ const deletePostService = async (postId, user) => {
   return true;
 };
 
+const sharePostService = async (
+  postId: string,
+  receivers: string[],
+  user: User
+): Promise<boolean> => {
+  if (!user || !user._id) {
+    throw new Error('User not authenticated');
+  }
+
+  const originalPost = await Post.findById(postId);
+  if (!originalPost) {
+    throw new Error('Post not found');
+  }
+
+  // Prevent sharing to self
+  const validReceivers = receivers.filter(
+    (receiverId) => receiverId !== user._id.toString()
+  );
+
+  if (validReceivers.length === 0) return false;
+
+  // Append share records
+  validReceivers.forEach((receiverId) => {
+    originalPost.shares.push({
+      sharedBy: user._id,
+      sharedWith: receiverId,
+      timestamp: new Date(),
+    });
+  });
+
+  await originalPost.save();
+  return true;
+};
+
 export {
   createPostService,
   updatePostService,
@@ -140,4 +174,5 @@ export {
   deleteCommentService,
   likePostService,
   deletePostService,
+  sharePostService,
 };

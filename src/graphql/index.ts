@@ -30,6 +30,7 @@ const RootMutation = new GraphQLObjectType({
     deleteComment: postResolvers.Mutation.deleteComment,
     likePost: postResolvers.Mutation.likePost,
     deletePost: postResolvers.Mutation.deletePost,
+    sharePost: postResolvers.Mutation.sharePost,
 
     // User Mutations
     login: userResolvers.Mutation.login,
